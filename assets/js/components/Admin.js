@@ -6,7 +6,7 @@ class Admin extends Component {
         return (
             <div>
             <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a class="navbar-brand" href="#">Bienvenue sur L'administration</a>
+            <a class="navbar-brand" href="#">L'administration des articles</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -18,12 +18,7 @@ class Admin extends Component {
                     <span class="sr-only">(current)</span>
                   </a>
                 </li>
-                {/* <li class="nav-item">
-                  <a class="nav-link" href="#">Supprimer un article</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Modifier un article</a>
-                </li> */}
+                
               </ul>
              
             </div>

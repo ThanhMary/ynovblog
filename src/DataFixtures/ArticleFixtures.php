@@ -16,11 +16,11 @@ class ArticleFixtures  extends Fixture
         $faker = Factory::create('fr_FR');
         $faker->seed(0);
         /* Users */
-       
+        $intDate = strval($faker->year . $faker->month . $faker->dayOfMonth);
         for ($i = 0; $i < 20; $i++) {
             $article = new Article();
             $article
-                ->setDate($faker->text(10))
+                ->setDate($intDate)
                 ->setTitle($faker->text(20))
                 ->setSubtitle($faker->realText(30))
                 ->setContent($faker->realText(500))

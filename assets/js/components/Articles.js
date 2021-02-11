@@ -30,7 +30,6 @@ class Articles extends Component {
                     <div className="row">
                         <h2 className="text-center"><span>Liste des articles</span> </h2>
                     </div>
-                  
                         <div className={'row'}>
                             { this.state.articles.map(article =>
                                 <div className="col-md-10 offset-md-1 row-block" key={article.id}>
