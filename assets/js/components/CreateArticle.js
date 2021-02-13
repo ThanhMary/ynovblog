@@ -5,28 +5,14 @@ import 'react-notifications/dist/react-notifications';
 import 'react-notifications/dist/react-notifications.css';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 
-const CreateArticle = ({history}) => {
-    const createNotification = (type) => {
-        switch (type) {
-          case 'info':
-            NotificationManager.info('Info message');
-            break;
-          case 'success':
-              console.log(type)
-            NotificationManager.success('Success message', 'Votre Article a bien été enregistré. Merci bien!');
-            break;
-          case 'warning':
-            NotificationManager.warning('Warning message', 'Close after 3000ms', 3000);
-            break;
-          case 'error':
-            NotificationManager.error('Error message', 'Votre enregistrement  a été échouée ', 5000, () => {
-              alert('callback');
-            });
-            break;
-        }
-    }
 
-    const [article, setArticle] = useState({
+export default CreateArticle;
+
+
+const CreateArticle = ({ match, history }) => {
+  const { id = "new" } = match.params;
+
+   const [article, setArticle] = useState({
         author:"",
         date:"",
         title:"",
@@ -35,28 +21,85 @@ const CreateArticle = ({history}) => {
         content:"",
         category:""
     });
+  const [errors, setErrors] = useState({
+        author:"",
+        date:"",
+        title:"",
+        subtitle:"",
+        image:"",
+        content:"",
+        category:""
+  });
+  const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
 
-    
-    const [idPost,setIdPost]=useState([])
-    const [error, setError] = useState('');
-
-    const handleChange = (event) => formService.handleChange(event, article, setArticle);
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-
-        ArticleApi.create(article).then((id) => {
-            setIdPost(id)
-            createNotification('success')
-        }).catch((error)=>createNotification('error'))
+  
+  const fetchArticle = async id => {
+    try {
+      const { author, date, title, subtitle, image, content, category } = await ArticlesAPI.find(
+        id
+      );
+      setArticle({ author, date, title, subtitle, image, content, category });
+      setLoading(false);
+    } catch (error) {
+      toast.error("L'article n'est pas pu chargé");
+      history.replace("/articles");
     }
+  };
 
-    return ( 
-        <>
-        <NotificationContainer /> 
-            <h1 className="text-center my-5">Ajouter un article</h1>
-         
-              <form onSubmit={handleSubmit} className="container">
+  useEffect(() => {
+    if (id !== "new") {
+      setLoading(true);
+      setEditing(true);
+      fetchArticle(id);
+    }
+  }, [id]);
+
+  
+  const handleChange = ({ currentTarget }) => {
+    const { name, value } = currentTarget;
+    setArticle({ ...article, [name]: value });
+  };
+
+  // Gestion de la soumission du formulaire
+  const handleSubmit = async event => {
+    event.preventDefault();
+
+    try {
+      setErrors({});
+
+      if (editing) {
+        await ArticlesAPI.update(id, article);
+        toast.success("L'article a bien été modifié");
+      } else {
+        await ArticlesAPI.create(article);
+        toast.success("L'artcile a bien été créé");
+        history.replace("/articles");
+      }
+    } catch ({ response }) {
+      const { violations } = response.data;
+
+      if (violations) {
+        const apiErrors = {};
+        violations.forEach(({ propertyPath, message }) => {
+          apiErrors[propertyPath] = message;
+        });
+
+        setErrors(apiErrors);
+        toast.error("Des erreurs dans votre formulaire !");
+      }
+    }
+  };
+
+  return (
+    <>
+      {(!editing && <h1>Création </h1>) || (
+        <h1>Modification</h1>
+      )}
+
+      {loading && <FormContentLoader />}
+      {!loading && (
+        <form onSubmit={handleSubmit} className="container">
                 <div className="row form-group">
                     <div className="col-md-6">
                         <label >Auteur </label>
@@ -149,10 +192,9 @@ const CreateArticle = ({history}) => {
                     </div>
                 </center>    
             </form>
-            <div> </div>
-           
-        </> 
-        );
-}
- 
-export default CreateArticle;
+      )}
+    </>
+  );
+};
+
+export default CustomerPage;
