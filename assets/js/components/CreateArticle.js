@@ -197,4 +197,4 @@ const CreateArticle = ({ match, history }) => {
   );
 };
 
-export default CustomerPage;
+export default CreateArticle;
